@@ -6,13 +6,13 @@
         <% if (username) { %>
             <form action="/logout" method="POST">
                 <label for="currentuser">Username: <%= username %></label>
-                <button type="submit">Logout</button>
+                <button type="submit">LOGOUT</button>
             </form>
         <% } else { %>
             <form action="/login" method="POST">
                 <label for="username">Enter Username:</label>
                 <input id="username" type="text" name="username" placeholder="Type your username here" style="width: 300px">
-                <button type="submit">Login</button>
+                <button type="submit">LOGIN</button>
             </form>
         <% } %>
     </p>
