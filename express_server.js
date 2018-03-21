@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
@@ -50,7 +51,7 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  res.cookie(username(req.body.username);
+  res.cookie('username', req.body.username);
   res.redirect("/urls");
 });
 
