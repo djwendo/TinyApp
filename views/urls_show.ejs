@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+  <title>TinyApp</title>
+</head>
+
+<body>
+  <header>
+    <% include ./partials/_header %>
+  </header>
+
+  <p>
+     <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
+      <label for="updateURL"><h2>ShortURL: <%= shortURL %></h2></label>
+      <input id="newURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
+      <button type="submit">UPDATE</button>
+    </form>
+  </p>
+  <p><a href="http://localhost:8080/urls/new">Shorten a new URL</a></p>
+</body>
+</html>

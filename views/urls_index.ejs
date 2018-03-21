@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang ="en">
+  <head>
+    <title>TinyApp</title>
+  </head>
+
+  <body>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+
+    <ul>
+      <% Object.keys(urls).forEach(function (key) { %>
+      <form action="/urls/<%= key %>/delete" method="POST">
+      <li> http://localhost:8080/<%= key %> (<%= urls[key] %>) <a href="/urls/<%= key %>">Edit</a><button type="submit">DELETE</button>
+      </form>
+      </li>
+      <% }); %>
+    </ul>
+    <p><a href="/urls/new">Shorten a new URL</a></p>
+  </body>
+</html>
