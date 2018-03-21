@@ -49,7 +49,12 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  var username = generateRandomString();
+  userDatabase[username] = {id: username, email: req.body.email, password: req.body.password};
+  res.cookie('user_id', username);
   console.log(req.body);
+  console.log(username);
+  console.log(userDatabase);
   res.redirect("/urls");
 });
 
@@ -63,7 +68,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  var shortURL = generateRandomString()
+  var shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   let templateVars =  {username: req.cookies["username"]};
   res.redirect(`http://localhost:8080/urls/${shortURL}`, templateVars);
