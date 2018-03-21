@@ -12,7 +12,9 @@
     <ul>
       <% Object.keys(urls).forEach(function (key) { %>
       <form action="/urls/<%= key %>/delete" method="POST">
-      <li> http://localhost:8080/<%= key %> (<%= urls[key] %>) <a href="/urls/<%= key %>">Edit</a><button type="submit">DELETE</button>
+      <li> http://localhost:8080/<%= key %> (<%= urls[key] %>)
+        <a href="/urls/<%= key %>">Edit</a>
+        <button type="submit">DELETE</button>
       </form>
       </li>
       <% }); %>

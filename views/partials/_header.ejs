@@ -2,9 +2,18 @@
     <h1>TinyApp - SHORTEN ALL THE THINGS!</h1>
 </header>
 <body>
-    <form action="/login" method="POST">
-        <label for="username">Enter Username:</label>
-        <input id="username" type="text" name="username" placeholder="Type your username here" style="width: 300px">
-        <button type="submit">Sign In</button>
-    </form>
+    <p>
+        <% if (username) { %>
+            <form action="/logout" method="POST">
+                <label for="currentuser">Username: <%= username %></label>
+                <button type="submit">Logout</button>
+            </form>
+        <% } else { %>
+            <form action="/login" method="POST">
+                <label for="username">Enter Username:</label>
+                <input id="username" type="text" name="username" placeholder="Type your username here" style="width: 300px">
+                <button type="submit">Login</button>
+            </form>
+        <% } %>
+    </p>
 </body>
