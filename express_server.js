@@ -12,7 +12,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const userDatabase = {
+const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
@@ -49,12 +49,22 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+
+  if (req.body.email == false || req.body.password == false) {
+    res.statusCode = 400;
+    res.send("Email or password cannot be empty.")
+  };
+
+  for (let user of Object.values(users)) {
+    if (user.email === req.body.email) {
+      res.statusCode = 400;
+      res.send("Email already exists.")
+    };
+  };
+
   var username = generateRandomString();
-  userDatabase[username] = {id: username, email: req.body.email, password: req.body.password};
+  users[username] = {id: username, email: req.body.email, password: req.body.password};
   res.cookie('user_id', username);
-  console.log(req.body);
-  console.log(username);
-  console.log(userDatabase);
   res.redirect("/urls");
 });
 
