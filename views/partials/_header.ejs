@@ -4,12 +4,11 @@
 <body>
     <p>
         <% if (!user) { %>
-            <form action="/logout" method="POST">
-                <button type="submit">LOGOUT</button>
-            </form>
-        <% } else { %>
             <a href="/register">REGISTER</a> – <a href="/login">LOGIN</a>
-
+        <% } else { %>
+            <form action="/logout" method="POST">
+            <button type="submit">LOGOUT</button>
+            </form>
         <% } %>
     </p>
 </body>

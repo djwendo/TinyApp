@@ -62,17 +62,46 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let templateVars =  {user: users[req.cookies["user_id"]]};
+  let templateVars =  {user: req.cookies["user_id"]};
   res.render("urls_login", templateVars);
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("/urls");
+  let registeredEmail;
+  let correctPassword;
+  let userID;
+
+  for (let user of Object.values(users)) {
+    if (user.email === req.body.email) {
+      registeredEmail = true;
+      userID = user.id;
+    };
+  };
+
+  if(!registeredEmail) {
+    res.statusCode = 403;
+    res.send("You need to register.");
+  };
+
+  for (let user of Object.values(users)) {
+    if (user.password === req.body.password) {
+      correctPassword = true;
+    };
+  };
+
+  if (!correctPassword) {
+    res.statusCode = 403;
+    res.send("Your password is incorrect.");
+  };
+
+  if (registeredEmail === true && correctPassword === true) {
+    res.cookie('user_id', userID);
+    res.redirect("/urls");
+  };
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
