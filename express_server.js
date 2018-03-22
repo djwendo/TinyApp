@@ -10,8 +10,18 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  //shortURL = random generated ID
+  //longURL = the full url for the shortURL
+  //userID = 6 digit ID for user that shortened the URL
+  //         they are they only ones who can edit/delete this URL
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  },
 };
 
 const users = {
@@ -32,7 +42,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]
   };
-  console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
@@ -46,7 +55,8 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   for (let user of Object.values(users)) {
     if (user.email === req.body.email) {
-      res.statusCode = 400;
+      res.statusCode = 401;
+      res.redirect("urls_register");
     };
   };
   if (req.body.email && req.body.password) {
@@ -56,7 +66,10 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   } else {
     res.statusCode = 400;
+    res.redirect("urls_register");
   };
+  console.log("user info when registered", users[username]);
+  console.log("id after registering:", users[username].id)
 });
 
 app.get("/login", (req, res) => {
@@ -78,7 +91,7 @@ app.post("/login", (req, res) => {
 
   if(!registeredEmail) {
     res.statusCode = 401;
-    res.send("You need to register.");
+    res.redirect("/register");
   };
 
   for (let user of Object.values(users)) {
@@ -89,7 +102,7 @@ app.post("/login", (req, res) => {
 
   if (!correctPassword) {
     res.statusCode = 403;
-    res.send("Your password is incorrect.");
+    res.redirect("/login");
   };
 
   if (registeredEmail === true && correctPassword === true) {
@@ -104,8 +117,13 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars =  {user: users[req.cookies["user_id"]]};
-  res.render("urls_new", templateVars);
+
+  if (users[req.cookies["user_id"]]) {
+    let templateVars =  {user: users[req.cookies["user_id"]]};
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/register");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -120,8 +138,8 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  let templateVars =  {user: users[req.cookies["user_id"]]};
-  res.redirect(`http://localhost:8080/urls/${shortURL}`, templateVars);
+  // let templateVars =  {user: users[req.cookies["user_id"]]};
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
