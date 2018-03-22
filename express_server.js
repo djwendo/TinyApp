@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+app.set("view engine", "ejs");
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -25,14 +27,12 @@ const users = {
   }
 }
 
-app.set("view engine", "ejs");
-
-
 app.get("/urls", (req, res) => {
   let templateVars =  {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]
   };
+  console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
@@ -47,7 +47,6 @@ app.post("/register", (req, res) => {
   for (let user of Object.values(users)) {
     if (user.email === req.body.email) {
       res.statusCode = 400;
-      res.send("Email already exists.");
     };
   };
   if (req.body.email && req.body.password) {
@@ -57,7 +56,6 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   } else {
     res.statusCode = 400;
-    res.send("Email or password cannot be empty.");
   };
 });
 
@@ -79,7 +77,7 @@ app.post("/login", (req, res) => {
   };
 
   if(!registeredEmail) {
-    res.statusCode = 403;
+    res.statusCode = 401;
     res.send("You need to register.");
   };
 
