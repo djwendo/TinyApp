@@ -3,6 +3,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+const cookieSession = require("cookie-session");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -35,22 +40,34 @@ const users = {
   }
 }
 
-function urlsForUser(id) {
-  for (var urls in urlsDatabase) {
-    var url = urls[urlsDatabase];
-    for (var user in url) {
-      var userID = url[user];
+function generateRandomString() {
+  return Math.random().toString(36).substr(2,6)
+}
+
+function urlsForUser(user_id) {
+  var usersURLs = {};
+
+  for (var url_id in urlDatabase) {
+    var urlObject = urlDatabase[url_id];
+    if (urlObject.userID === user_id) {
+      usersURLs[url_id] = urlObject
     }
   }
-  return
-};
+  return usersURLs;
+}
 
 app.get("/urls", (req, res) => {
+
   let templateVars =  {
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
-  };
-  console.log(templateVars.user);
+      urls: urlsForUser(req.cookies["user_id"]),
+      user: users[req.cookies["user_id"]]
+    };
+
+  if (req.cookies["user_id"]) {
+    console.log("user id rn:", req.cookies["user_id"]);
+    urlsForUser(req.cookies["user_id"]);
+    console.log(urlsForUser(req.cookies["user_id"]));
+  }
   res.render("urls_index", templateVars);
 });
 
@@ -198,6 +215,8 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-function generateRandomString() {
-  return Math.random().toString(36).substr(2,6)
-}
+
+
+
+
+
