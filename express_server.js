@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require("cookie-session");
 
@@ -38,7 +37,7 @@ const users = {
     password: "dishwasher-funk"
   }
 }
-//Generates random 6 digit string used for both ShortURLs/urlID and userID
+//Generates random 6 digit strings used for both ShortURLs/urlID and userID
 function generateRandomString() {
   return Math.random().toString(36).substr(2,6)
 }
@@ -67,7 +66,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//Registration form.If user is already logged in, returns "You are already logged in." message.
+//Registration form. If user is already logged in, returns "You are already logged in." message.
 app.get("/register", (req, res) => {
   let templateVars =  {
     user: users[req.session.user_id]
@@ -76,13 +75,14 @@ app.get("/register", (req, res) => {
 });
 
 //Submits user registration form checking for valid email and password.
-//Password is encrypted with bcrypt.
+//Password is encrypted using bcrypt.
 app.post("/register", (req, res) => {
   for (let user of Object.values(users)) {
     if (user.email === req.body.email) {
       res.sendStatus(400);
-    };
-  };
+    }
+  }
+
   if (req.body.email && req.body.password) {
     var username = generateRandomString();
     var hashedPassword = bcrypt.hashSync(req.body.password, 10);
@@ -91,7 +91,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   } else {
     res.sendStatus(400);
-  };
+  }
 });
 
 //Login page. If already logged in, returns "You are already loggin in." message.
@@ -113,31 +113,25 @@ app.post("/login", (req, res) => {
     if (user.email === req.body.email) {
       registeredEmail = true;
       userID = user.id;
-    };
-  };
-
-  if(!registeredEmail) {
-    res.sendStatus(400);
-  };
+    }
+  }
 
   for (let user of Object.values(users)) {
     if (bcrypt.compareSync(req.body.password, user.password)) {
       correctPassword = true;
-    };
-  };
-
-  if (!correctPassword) {
-    res.sendStatus(400);
-  };
+    }
+  }
 
   if (registeredEmail === true && correctPassword === true) {
     req.session.user_id = userID;
     res.redirect("/urls");
-  };
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 
-//Logs user out, removes session cookies (sets to null), and redirects to "/urls".
+//Logs user out, deletes session cookies (set to null), and redirects to "/urls".
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
@@ -154,6 +148,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+//Individual page for each shortened URL.
 app.get("/urls/:id", (req, res) => {
 
   if (urlDatabase[req.params.id]) {
