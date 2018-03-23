@@ -35,11 +35,22 @@ const users = {
   }
 }
 
+function urlsForUser(id) {
+  for (var urls in urlsDatabase) {
+    var url = urls[urlsDatabase];
+    for (var user in url) {
+      var userID = url[user];
+    }
+  }
+  return
+};
+
 app.get("/urls", (req, res) => {
   let templateVars =  {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]
   };
+  console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
@@ -127,11 +138,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]],
+    userID: req.cookies["user_id"],
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].url,
     creatingUser: urlDatabase[req.params.id].userID
   };
-  console.log("tempVars on id page:", templateVars);
   res.render("urls_show", templateVars);
 });
 
@@ -143,7 +154,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].url;
   res.redirect(longURL);
 })
 
@@ -151,8 +162,8 @@ app.get("/u/:shortURL", (req, res) => {
 //deleting a shortened URL
 app.post("/urls/:id/delete", (req, res) => {
 
-console.log("user info:", req.cookies["user_id"]);
-console.log("user creating URL:", urlDatabase[req.params.id].userID);
+// console.log("user info:", req.cookies["user_id"]);
+// console.log("user creating URL:", urlDatabase[req.params.id].userID);
 
   if (req.cookies["user_id"] === urlDatabase[req.params.id].userID) {
     delete urlDatabase[req.params.id];
@@ -163,7 +174,9 @@ console.log("user creating URL:", urlDatabase[req.params.id].userID);
 })
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newURL;
+  urlDatabase[req.params.id].url = req.body.newURL;
+  console.log("urlDatabase[req.params.id]:", urlDatabase[req.params.id].url);
+  console.log("req.body.newURL", req.body.newURL);
   res.redirect("/urls");
 })
 
