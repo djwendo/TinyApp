@@ -4,9 +4,6 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
 const cookieSession = require("cookie-session");
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -52,9 +49,9 @@ function urlsForUser(user_id) {
     if (urlObject.userID === user_id) {
       usersURLs[url_id] = urlObject
     }
-  }
+  };
   return usersURLs;
-}
+};
 
 app.get("/urls", (req, res) => {
 
@@ -64,9 +61,7 @@ app.get("/urls", (req, res) => {
     };
 
   if (req.cookies["user_id"]) {
-    console.log("user id rn:", req.cookies["user_id"]);
     urlsForUser(req.cookies["user_id"]);
-    console.log(urlsForUser(req.cookies["user_id"]));
   }
   res.render("urls_index", templateVars);
 });
@@ -87,7 +82,8 @@ app.post("/register", (req, res) => {
   };
   if (req.body.email && req.body.password) {
     var username = generateRandomString();
-    users[username] = {id: username, email: req.body.email, password: req.body.password};
+    var hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    users[username] = {id: username, email: req.body.email, password: hashedPassword};
     res.cookie('user_id', username);
     res.redirect("/urls");
   } else {
@@ -95,7 +91,8 @@ app.post("/register", (req, res) => {
     res.redirect("urls_register");
   };
   console.log("user info when registered", users[username]);
-  console.log("id after registering:", users[username].id)
+  console.log("id after registering:", users[username].id);
+  console.log("hashed password:", hashedPassword);
 });
 
 app.get("/login", (req, res) => {
@@ -121,7 +118,7 @@ app.post("/login", (req, res) => {
   };
 
   for (let user of Object.values(users)) {
-    if (user.password === req.body.password) {
+    if (bcrypt.compareSync(req.body.password, user.password)) {
       correctPassword = true;
     };
   };
@@ -166,7 +163,6 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = { urlID: shortURL, url: req.body.longURL, userID: req.cookies["user_id"] };
-  console.log("details of new entry:", urlDatabase[shortURL]);
   res.redirect(`/urls/${shortURL}`);
 });
 
