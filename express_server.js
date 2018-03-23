@@ -2,14 +2,24 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require("cookie-session");
+// const expressMessages = require("express-messages");
+// const connectFlash = require("connect-flash");
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   secret: 'wendyisthebest'
 }))
+// app.use(connectFlash);
+// app.configure(funtion() {
+//   app.use(connectFlash());
+// });
+// app.use(function (req, res, next) {
+//   res.locals.messages = require('express-messages')(req, res);
+//   next();
+// })
 
 app.set("view engine", "ejs");
 
@@ -170,19 +180,21 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//
+//When user creates new shortURL, shortURL is added to database
+//and associated with creating user. User is redirected to unique shortURL page.
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = { urlID: shortURL, url: req.body.longURL, userID: req.session.user_id };
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].url;
-  res.redirect(longURL);
+//Edit shortURL to point to new longURL
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id].url = req.body.newURL;
+  res.redirect("/urls");
 })
 
-//Deleting a shortened URL
+//Delete a shortened URL
 app.post("/urls/:id/delete", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.id].userID) {
     delete urlDatabase[req.params.id];
@@ -192,12 +204,16 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 })
 
-app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id].url = req.body.newURL;
-  res.redirect("/urls");
+//Link to the original/longURL that the shortURL is now pointing to.
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL].url;
+  res.redirect(longURL);
 })
 
 
+
+
+//Root redirects to /urls is user is logged in. If not logged in, redirects to login page.
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect("/urls");
