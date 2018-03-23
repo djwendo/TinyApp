@@ -3,19 +3,21 @@
 <head>
   <title>TinyApp</title>
 </head>
-
-<body>
   <header>
     <% include ./partials/_header %>
   </header>
-
-  <p>
+  <body>
+  <h1>TinyURL: <%= shortURL %></h1>
+    <% if (user === creatingUser) { %>
      <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
-      <label for="updateURL"><h2>ShortURL: <%= shortURL %></h2></label>
+      <label for="updateURL">Edit this TinyURL: </label>
       <input id="newURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
       <button type="submit">UPDATE</button>
     </form>
-  </p>
-  <p><a href="http://localhost:8080/urls/new">Shorten a new URL</a></p>
+    <% } else { %>
+    This TinyURL isn't yours, you can't edit it. #sorrynotsorry
+    <% } %>
+  <p><a href="/urls">See your short URLs</a></p>
+  <p><a href="/urls/new">Shorten a new URL</a></p>
 </body>
 </html>

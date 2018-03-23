@@ -10,19 +10,17 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  //shortURL = random generated ID
-  //longURL = the full url for the shortURL
-  //userID = 6 digit ID for user that shortened the URL
-  //         they are they only ones who can edit/delete this URL
   "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
+    urlID: "b2xVn2",
+    url: "http://www.lighthouselabs.ca",
     userID: "userRandomID"
   },
   "9sm5xK": {
-    longURL: "http://www.google.com",
+    urlID: "9sm5xK",
+    url: "http://www.google.com",
     userID: "user2RandomID"
-  },
-};
+  }
+}
 
 const users = {
   "userRandomID": {
@@ -122,7 +120,7 @@ app.get("/urls/new", (req, res) => {
     let templateVars =  {user: users[req.cookies["user_id"]]};
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/register");
+    res.redirect("/login");
   }
 });
 
@@ -130,15 +128,17 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]],
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].url,
+    creatingUser: urlDatabase[req.params.id].userID
   };
+  console.log("tempVars on id page:", templateVars);
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  // let templateVars =  {user: users[req.cookies["user_id"]]};
+  urlDatabase[shortURL] = { urlID: shortURL, url: req.body.longURL, userID: req.cookies["user_id"] };
+  console.log("details of new entry:", urlDatabase[shortURL]);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -147,10 +147,19 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 })
 
+
+//deleting a shortened URL
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  let templateVars =  {user: users[req.cookies["user_id"]]};
-  res.redirect("/urls", templateVars);
+
+console.log("user info:", req.cookies["user_id"]);
+console.log("user creating URL:", urlDatabase[req.params.id].userID);
+
+  if (req.cookies["user_id"] === urlDatabase[req.params.id].userID) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.redirect("/urls");
+  }
 })
 
 app.post("/urls/:id", (req, res) => {

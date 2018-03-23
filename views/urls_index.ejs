@@ -8,17 +8,22 @@
     <header>
       <% include ./partials/_header %>
     </header>
+    <% if (user) { %>
+      <ul>
+        <li>
+          <% Object.keys(urls).forEach(function (key) { %>
+            <form action="/urls/<%= key %>/delete" method="POST">
+              <li> http://localhost:8080/urls/<%= key %> (<%= urls[key].url %>)
+              <a href="/urls/<%= key %>">EDIT</a>
+              <button type="submit">DELETE</button>
+            </form>
+          <% }); %>
+             </li>
+      </ul>
+          <p><a href="/urls/new">Shorten a new URL</a></p>
 
-    <ul>
-      <% Object.keys(urls).forEach(function (key) { %>
-      <form action="/urls/<%= key %>/delete" method="POST">
-      <li> http://localhost:8080/<%= key %> (<%= urls[key] %>)
-        <a href="/urls/<%= key %>">EDIT</a>
-        <button type="submit">DELETE</button>
-      </form>
-      </li>
-      <% }); %>
-    </ul>
-    <p><a href="/urls/new">Shorten a new URL</a></p>
+    <% } else { %>
+      <p>Login to get started with TinyApp.</p>
+    <% } %>
   </body>
 </html>
