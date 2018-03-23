@@ -38,11 +38,12 @@ const users = {
     password: "dishwasher-funk"
   }
 }
-
+//Generates random 6 digit string used for both ShortURLs/urlID and userID
 function generateRandomString() {
   return Math.random().toString(36).substr(2,6)
 }
 
+//Generates a list of short urls by specific user. Allows users to access only their own shortened urls.
 function urlsForUser(user_id) {
   var usersURLs = {};
   for (var url_id in urlDatabase) {
@@ -54,6 +55,7 @@ function urlsForUser(user_id) {
   return usersURLs;
 };
 
+//GET "/urls" if registered/logged in, will display list of user's short urls. If not, will encourage user to login.
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
     urlsForUser(req.session.user_id);
@@ -65,6 +67,8 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//GET "/register" returns registration form.
+//If user is already logged in, returns "You are already logged in." message.
 app.get("/register", (req, res) => {
   let templateVars =  {
     user: users[req.session.user_id]
@@ -72,6 +76,8 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
+//POST "/register" submits user registration form checking for valid email and password.
+//Password is encrypted with bcrypt.
 app.post("/register", (req, res) => {
   for (let user of Object.values(users)) {
     if (user.email === req.body.email) {
@@ -89,16 +95,19 @@ app.post("/register", (req, res) => {
     res.statusCode = 400;
     res.redirect("urls_register");
   };
-  // console.log("user info when registered", users[username]);
-  // console.log("id after registering:", users[username].id);
-  // console.log("hashed password:", hashedPassword);
 });
 
+//GET "/login" returns login page.
+//If already logged in, returns "You are already loggin in." message.
 app.get("/login", (req, res) => {
-  let templateVars =  {user: req.session.user_id};
+  let templateVars =  {
+    user: users[req.session.user_id]
+    };
   res.render("urls_login", templateVars);
 });
 
+//POST "/login" submits login form checking for valid email and password.
+//Compates bcrypt encrypted password to what was submitted by user during login.
 app.post("/login", (req, res) => {
   let registeredEmail;
   let correctPassword;
@@ -133,6 +142,8 @@ app.post("/login", (req, res) => {
   };
 });
 
+
+//POST "/logout" logs user out, nulls session cookies, and redirects to "/urls".
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");

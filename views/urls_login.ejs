@@ -8,6 +8,11 @@
     <header>
       <% include ./partials/_header %>
     </header>
+     <% if (user) { %>
+      <h1>You are already logged in.</h1>
+      <p><a href="/urls">See your short URLs</a></p>
+      <p><a href="/urls/new">Shorten a new URL</a></p>
+    <% } else { %>
     <h1>You gotsta login!</h1>
     <p>
       <form action="/login" method="POST">
@@ -18,4 +23,5 @@
       <button type="submit">LOGIN</button>
       </form>
     </p>
+    <% } %>
 </body>
