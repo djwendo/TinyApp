@@ -12,7 +12,7 @@
 
           <% Object.keys(urls).forEach(function (key) { %>
             <form action="/urls/<%= key %>/delete" method="POST">
-            http://localhost:8080/urls/<%= key %> (<%= urls[key].url %>)
+            <%= urls[key].url %> is now <b><a href="http://localhost:8080/u/<%= key %>" target="_blank">http://localhost:8080/u/<%= key %></a></b>
             <a href="/urls/<%= key %>">EDIT</a>
             <button type="submit">DELETE</button>
             </form>
@@ -21,7 +21,7 @@
           <p><a href="/urls/new">Shorten a new URL</a></p>
 
     <% } else { %>
-      <p>Login to get started with TinyApp.</p>
+      <p>Login or register to start making your own TinyURLs.</p>
     <% } %>
   </body>
 </html>

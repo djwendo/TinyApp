@@ -9,11 +9,12 @@
       <% include ./partials/_header %>
     </header>
     <% if (user) { %>
-      <h1>You are already logged in.</h1>
+      <h1>You are already registered & logged in.</h1>
       <p><a href="/urls">See your short URLs</a></p>
       <p><a href="/urls/new">Shorten a new URL</a></p>
     <% } else { %>
     <h1>You need to register, my friend.</h1>
+    <p>If you're aleady registered, you just need to login. Click login above to get started.</p>
     <p>
       <form action="/register" method="POST">
       <label for="email">Your email:</label>

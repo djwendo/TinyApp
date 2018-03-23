@@ -8,15 +8,19 @@
   </header>
   <body>
   <h1>TinyURL: <%= shortURL %></h1>
+
     <% if (userID === creatingUser) { %>
-     <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
+    <p>Share your beautiful TinyURL with the world! Copy, paste & share: <b>http://localhost:8080/u/<%= shortURL %></b></p>
+     <form action="/urls/<%= shortURL %>" method="POST">
       <label for="updateURL">Edit this TinyURL: </label>
       <input id="newURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
       <button type="submit">UPDATE</button>
     </form>
     <% } else { %>
-    This TinyURL isn't yours, you can't edit it. #sorrynotsorry
+    <p>This TinyURL isn't yours, so you can't edit it. #sorrynotsorry </p>
+    <p>But, you CAN share it &mdash; simply copy, paste & share: http://localhost:8080/u/<%= shortURL %></p>
     <% } %>
+
   <p><a href="/urls">See your short URLs</a></p>
   <p><a href="/urls/new">Shorten a new URL</a></p>
 </body>

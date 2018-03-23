@@ -55,7 +55,7 @@ function urlsForUser(user_id) {
   return usersURLs;
 };
 
-//GET "/urls" if registered/logged in, will display list of user's short urls. If not, will encourage user to login.
+//Main page: If registered/logged in, will display list of user's short urls. If not, will encourage user to login.
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
     urlsForUser(req.session.user_id);
@@ -67,8 +67,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//GET "/register" returns registration form.
-//If user is already logged in, returns "You are already logged in." message.
+//Registration form.If user is already logged in, returns "You are already logged in." message.
 app.get("/register", (req, res) => {
   let templateVars =  {
     user: users[req.session.user_id]
@@ -76,13 +75,12 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-//POST "/register" submits user registration form checking for valid email and password.
+//Submits user registration form checking for valid email and password.
 //Password is encrypted with bcrypt.
 app.post("/register", (req, res) => {
   for (let user of Object.values(users)) {
     if (user.email === req.body.email) {
-      res.statusCode = 401;
-      res.redirect("urls_register");
+      res.sendStatus(400);
     };
   };
   if (req.body.email && req.body.password) {
@@ -92,13 +90,11 @@ app.post("/register", (req, res) => {
     req.session.user_id = username;
     res.redirect("/urls");
   } else {
-    res.statusCode = 400;
-    res.redirect("urls_register");
+    res.sendStatus(400);
   };
 });
 
-//GET "/login" returns login page.
-//If already logged in, returns "You are already loggin in." message.
+//Login page. If already logged in, returns "You are already loggin in." message.
 app.get("/login", (req, res) => {
   let templateVars =  {
     user: users[req.session.user_id]
@@ -106,8 +102,8 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
-//POST "/login" submits login form checking for valid email and password.
-//Compates bcrypt encrypted password to what was submitted by user during login.
+//Submits login form checking for valid email and password.
+//Compares bcrypt encrypted password to what was submitted by user during login.
 app.post("/login", (req, res) => {
   let registeredEmail;
   let correctPassword;
@@ -121,8 +117,7 @@ app.post("/login", (req, res) => {
   };
 
   if(!registeredEmail) {
-    res.statusCode = 401;
-    res.redirect("/register");
+    res.sendStatus(400);
   };
 
   for (let user of Object.values(users)) {
@@ -132,8 +127,7 @@ app.post("/login", (req, res) => {
   };
 
   if (!correctPassword) {
-    res.statusCode = 403;
-    res.redirect("/login");
+    res.sendStatus(400);
   };
 
   if (registeredEmail === true && correctPassword === true) {
@@ -143,14 +137,15 @@ app.post("/login", (req, res) => {
 });
 
 
-//POST "/logout" logs user out, nulls session cookies, and redirects to "/urls".
+//Logs user out, removes session cookies (sets to null), and redirects to "/urls".
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
 
+//When a new url is shortened, takes user to page for that short URL.
+//User can edit or share the url from this page.
 app.get("/urls/new", (req, res) => {
-
   if (users[req.session.user_id]) {
     let templateVars =  {user: users[req.session.user_id]};
     res.render("urls_new", templateVars);
@@ -160,16 +155,22 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    user: users[req.session.user_id],
-    userID: req.session.user_id,
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].url,
-    creatingUser: urlDatabase[req.params.id].userID
-  };
-  res.render("urls_show", templateVars);
+
+  if (urlDatabase[req.params.id]) {
+    let templateVars = {
+      user: users[req.session.user_id],
+      userID: req.session.user_id,
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id].url,
+      creatingUser: urlDatabase[req.params.id].userID
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.sendStatus(404);
+  }
 });
 
+//
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = { urlID: shortURL, url: req.body.longURL, userID: req.session.user_id };
@@ -197,21 +198,12 @@ app.post("/urls/:id", (req, res) => {
 })
 
 
-
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect("/urls");
   } else {
     res.redirect("/login");
   }
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
