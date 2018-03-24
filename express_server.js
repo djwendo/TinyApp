@@ -165,19 +165,22 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//
+//Creating a new shortened URL generates a random 6-digit shortURL and adds the URL
+//to the urlDatabase while redirecting the user to a sub-page that allows the user to edit
+//their new shortened URL.
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = { urlID: shortURL, url: req.body.longURL, userID: req.session.user_id };
   res.redirect(`/urls/${shortURL}`);
 });
 
+//Redirects to the original/longURL the shortened URL was created from.
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].url;
   res.redirect(longURL);
 })
 
-//Deleting a shortened URL
+//Deletes a shortened URL. Only the user who created the shortened URL can delete it.
 app.post("/urls/:id/delete", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.id].userID) {
     delete urlDatabase[req.params.id];
@@ -187,12 +190,13 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 })
 
+//Individual page for each shortURL. User who created the URL can edit the URL from this page.
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id].url = req.body.newURL;
   res.redirect("/urls");
 })
 
-
+//Logged in users will see a list of their shortURLs, otherwise users will be redirected to the login page.
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect("/urls");
