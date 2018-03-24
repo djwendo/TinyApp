@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang ="en">
-<head>
-  <title>TinyApp</title>
-</head>
+  <head>
+    <title>TinyApp</title>
+  </head>
+
   <header>
     <% include ./partials/_header %>
   </header>
+
   <body>
-  <h1>TinyURL: <%= shortURL %></h1>
+    <h1>TinyURL: <%= shortURL %></h1>
 
     <% if (userID === creatingUser) { %>
-    <p>Share your beautiful TinyURL with the world! Copy, paste &amp; share: <b>http://localhost:8080/u/<%= shortURL %></b></p>
-     <form action="/urls/<%= shortURL %>" method="POST">
-      <label for="updateURL">Edit this TinyURL: </label>
-      <input id="newURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
-      <button type="submit">UPDATE</button>
-    </form>
+      <p>Share your beautiful TinyURL with the world! Copy, paste &amp; share: <b>http://localhost:8080/u/<%= shortURL %></b></p>
+       <form action="/urls/<%= shortURL %>" method="POST">
+        <label for="updateURL">Edit this TinyURL: </label>
+        <input id="newURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
+        <button type="submit">UPDATE</button>
+      </form>
     <% } else { %>
-    <p>Whoops, this TinyURL isn't yours. #sorrynotsorry </p>
+      <p>Whoops, this TinyURL isn't yours. #sorrynotsorry </p>
     <% } %>
 
-  <p><a href="/urls">See your short URLs</a></p>
-  <p><a href="/urls/new">Shorten a new URL</a></p>
-</body>
+    <p><a href="/urls">See your short URLs</a></p>
+    <p><a href="/urls/new">Shorten a new URL</a></p>
+  </body>
 </html>

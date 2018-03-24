@@ -4,25 +4,27 @@
     <title>TinyApp</title>
   </head>
 
+  <header>
+    <% include ./partials/_header %>
+  </header>
+
   <body>
-    <header>
-      <% include ./partials/_header %>
-    </header>
      <% if (user) { %>
       <h1>You are already logged in.</h1>
       <p><a href="/urls">See your short URLs</a></p>
       <p><a href="/urls/new">Shorten a new URL</a></p>
     <% } else { %>
-    <h1>You gotsta login!</h1>
-    <p>If you haven't registered yet, you better start there. Click Register to, uh, well, register.</p>
-    <p>
-      <form action="/login" method="POST">
-      <label for="email"><b>EMAIL:</b></label>
-      <input id="email" type="email" name="email" placeholder="your.email@email.com" style="width: 300px">
-       <label for="password"><b>PASSWORD:</b></label>
-      <input id="password" type="password" name="password" placeholder="choose a password" style="width: 300px">
-      <button type="submit">LOGIN</button>
-      </form>
-    </p>
+      <h1>You gotsta login!</h1>
+      <p>If you haven't registered yet, you better start there. Click Register to, uh, well, register.</p>
+      <p>
+        <form action="/login" method="POST">
+        <label for="email"><b>EMAIL:</b></label>
+        <input id="email" type="email" name="email" placeholder="your.email@email.com" style="width: 300px">
+         <label for="password"><b>PASSWORD:</b></label>
+        <input id="password" type="password" name="password" placeholder="choose a password" style="width: 300px">
+        <button type="submit">LOGIN</button>
+        </form>
+      </p>
     <% } %>
-</body>
+  </body>
+</html>

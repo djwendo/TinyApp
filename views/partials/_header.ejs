@@ -2,14 +2,14 @@
     <h1>TinyApp - SHORTEN ALL THE THINGS!</h1>
 </header>
 <body>
-    <p>
-        <% if (!user) { %>
-            <a href="/register">REGISTER</a> – <a href="/login">LOGIN</a>
-        <% } else { %>
-            <form action="/logout" method="POST">
-            Hello <%= user.email %>!
-            <button type="submit">LOGOUT</button>
-            </form>
-        <% } %>
-    </p>
+  <p>
+    <% if (!user) { %>
+      <a href="/register">REGISTER</a> – <a href="/login">LOGIN</a>
+    <% } else { %>
+      <form action="/logout" method="POST">
+      Hello <%= user.email %>!
+      <button type="submit">LOGOUT</button>
+      </form>
+    <% } %>
+  </p>
 </body>
